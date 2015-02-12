@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>多人聊天室</title>
+    <style type="text/css">
+        #connect-container {
+            float: left;
+            width: 400px
+        }
+
+        #connect-container div {
+            padding: 5px;
+        }
+
+        #console-container {
+            float: left;
+            margin-left: 15px;
+            width: 1000px;
+        }
+
+        #console {
+            border: 1px solid #CCCCCC;
+            border-right-color: #999999;
+            border-bottom-color: #999999;
+            height: 570px;
+            overflow-y: scroll;
+            padding: 5px;
+            width: 100%;
+        }
+
+        #console p {
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+
+    <script src="http://cdn.jsdelivr.net/sockjs/0.3.4/sockjs.min.js"></script>
+    <script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
+
+    <script type="text/javascript" th:inline="javascript">
+        /* <![CDATA[ */
+        var base_url = /*[[@{/}]]*/'base_url';
+        $(function(){
+            setInterval("getSum()", 1000);
+        })
+
+        //目前是通过不停的轮询的方式获取在线人数的，还没想到更好的办法
+        function getSum()
+        {
+            $.ajax({
+                url: base_url + "chat/getSum",
+                type: 'get',
+                success: function (data, status) {
+                    var temp = data;
+                    $("#sum").html("在线人数：" + temp);
+                },
+                error: function (data, status, e) {
+                }
+            });
+        }
+        var ws = null;
+        var url = null;
+        var transports = [];
+        var now = null;
+
+        function setConnected(connected) {
+            document.getElementById('connect').disabled = connected;
+            document.getElementById('disconnect').disabled = !connected;
+            document.getElementById('echo').disabled = !connected;
+            document.getElementById('username').disabled = connected;
+        }
+
+        function connect() {
+            var host = window.location.host;
+            url = 'http://' + window.location.host + '/webChat/sockjs/echo';
+            if (!url) {
+                alert('Select whether to use W3C WebSocket or SockJS');
+                return;
+            }
+            log(url);
+            log(base_url);
+            var name = document.getElementById('username').value;
+            if(!name || name.trim().length == 0) {
+                alert('请输入昵称!')
+                return;
+            }
+            if(name.length > 10) {
+                alert('小样，昵称太长了!')
+                return;
+            }
+            ws = new SockJS(url, undefined, transports);
+
+            ws.onopen = function () {
+                setConnected(true);
+                var username = document.getElementById('username').value;
+                //通过发送一条带有特殊符号的信息告诉后台登陆者的昵称，很蛋疼
+                //最好是可以在创建连接时就将这个信息一并带回服务器的，但是我还没找到可以用的这样的方法
+                ws.send('|'+ username);
+                log('服务器连接成功!');
+                log('进来玩的小伙，帮忙在QQ，微博等地方转发下这个聊天室的地址哦');
+            };
+            ws.onmessage = function (event) {
+                log(event.data);
+            };
+            ws.onclose = function (event) {
+                setConnected(false);
+                if(event.code == 1007) {
+                    log('小样，昵称太长了!');
+                }
+                log('断开连接!');
+                setConnected(false);
+            };
+            document.getElementById('message').focus();
+        }
+
+        function disconnect() {
+            if (ws != null) {
+                ws.close();
+                ws = null;
+            }
+            setConnected(false);
+        }
+
+        function echo() {
+            if (ws != null) {
+                var message = document.getElementById('message').value;
+                if(message.trim().length == 0) {
+                    log('请输入内容!')
+                    return;
+                }
+                if(message.length > 100) {
+                    alert('太长了，明显是来刷屏的啊!');
+                    return;
+                }
+                ws.send(message);
+                document.getElementById('message').value = '';
+            } else {
+                alert('connection not established, please connect.');
+            }
+        };
+
+        function log(message) {
+            var console = document.getElementById('console');
+            var p = document.createElement('p');
+            p.style.wordWrap = 'break-word';
+            p.appendChild(document.createTextNode(message));
+            console.appendChild(p);
+            while (console.childNodes.length > 35) {
+                console.removeChild(console.firstChild);
+            }
+            console.scrollTop = console.scrollHeight;
+        }
+        /* ]]> */
+    </script>
+</head>
+<body>
+<input type="hidden" id="baseURL" th:value="@{/}" />
+<noscript><h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websockets
+    rely on Javascript being enabled. Please enable
+    Javascript and reload this page!</h2></noscript>
+<div>
+    <div id="connect-container">
+        <div>
+            昵称:<input type="text" maxlength="10" id="username" placeholder="请输入昵称" onkeyup="if(event.keyCode == 13){connect();}" /><br />
+            <textarea id="message" placeholder="请输入内容!" style="width: 350px" onkeyup="if(event.keyCode==13) {document.getElementById('echo').click();}" />
+        </div>
+        <div>
+            <button id="connect" onclick="connect();">上线</button>
+            <button id="disconnect" onclick="disconnect();">下线</button>
+            <button id="echo" onclick="echo();">发送</button>
+        </div>
+        <div id="sum" th:text="'在线人数：'+${msg}">
+        </div>
+    </div>
+    <div id="console-container">
+        <div id="console"></div>
+    </div>
+    <br />
+    <a href="https://github.com/sd4324530/fastweixin" target="_Blank">欢迎支持微信公众号开发框架fastweixin</a>
+</div>
+</body>
+</html>
