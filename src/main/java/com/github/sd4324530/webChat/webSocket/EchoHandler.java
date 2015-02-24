@@ -135,6 +135,7 @@ public class EchoHandler extends TextWebSocketHandler {
         }
     }
 
+
     @Override
     protected void handleBinaryMessage(WebSocketSession session, BinaryMessage message) {
         log.debug("handleBinaryMessage:{}", message.toString());
@@ -148,5 +149,24 @@ public class EchoHandler extends TextWebSocketHandler {
     @Override
     public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
         log.error("handleTransportError:", exception);
+        String name = this.cache.getUserName(session.getId());
+        this.cache.deleteCache(session.getId());
+        this.timeLimitMap.remove(session.getId());
+        if(session.isOpen()) {
+            session.close();
+        }
+        if (null != name && !"".equals(name)) {
+//            if (session.isOpen()) {
+//                session.sendMessage(new TextMessage(name + "下线啦!"));
+//            }
+            this.cache.getAll().forEach(s -> {
+                try {
+                    String now = DateUtils.date2String(new Date());
+                    s.sendMessage(new TextMessage(now + " " + name + "下线啦!"));
+                } catch (IOException e) {
+                    log.error("异常", e);
+                }
+            });
+        }
     }
 }
