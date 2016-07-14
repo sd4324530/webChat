@@ -4,4 +4,4 @@
 
 项目主页:[http://git.oschina.net/pyinjava/webChat](http://git.oschina.net/pyinjava/webChat)<br>
 
-##[演示页面](http://chat.sd4324530.org/)<br>
+##[演示页面](http://121.40.140.41:8080/webChat/chat)<br>
