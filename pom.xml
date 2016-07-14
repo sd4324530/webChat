@@ -13,13 +13,13 @@
     <!-- 声明的常量 标识各个jar版本 -->
     <properties>
         <junit.version>4.12</junit.version>
-        <spring.version>4.2.1.RELEASE</spring.version>
-        <guava.version>18.0</guava.version>
-        <joda-time.version>2.8.2</joda-time.version>
-        <logback.version>1.1.3</logback.version>
+        <spring.version>4.3.1.RELEASE</spring.version>
+        <guava.version>19.0</guava.version>
+        <joda-time.version>2.9.4</joda-time.version>
+        <logback.version>1.1.7</logback.version>
 
-        <thymeleaf.version>2.1.4.RELEASE</thymeleaf.version>
-        <thymeleaf.layout.version>1.3.0</thymeleaf.layout.version>
+        <thymeleaf.version>3.0.0.RELEASE</thymeleaf.version>
+        <thymeleaf.layout.version>2.0.0</thymeleaf.layout.version>
 
         <java.home>C:/Program Files/Java/jdk1.8.0_60</java.home>
     </properties>
@@ -81,7 +81,7 @@
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>1.2.7</version>
+            <version>1.2.13</version>
         </dependency>
 
         <dependency>
@@ -92,7 +92,7 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.4</version>
+            <version>2.5</version>
         </dependency>
 
         <!-- spring jar start -->
@@ -157,17 +157,17 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
-            <version>2.6.1</version>
+            <version>2.8.0</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <version>2.6.1</version>
+            <version>2.8.0</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.6.1</version>
+            <version>2.8.0</version>
         </dependency>
     </dependencies>
 
@@ -177,7 +177,7 @@
             <plugin>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
-                <version>9.3.3.v20150827</version>
+                <version>9.3.10.v20160621</version>
                 <configuration>
                     <scanIntervalSeconds>0</scanIntervalSeconds>
                     <httpConnector>
@@ -192,15 +192,15 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.3</version>
+                <version>3.5.1</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
                     <encoding>UTF-8</encoding>
-                    <compilerArguments>
-                        <verbose />
-                        <bootclasspath>${java.home}/jre/lib/rt.jar;${java.home}/jre/lib/jce.jar</bootclasspath>
-                    </compilerArguments>
+                    <!--<compilerArguments>-->
+                        <!--<verbose />-->
+                        <!--<bootclasspath>${java.home}/jre/lib/rt.jar;${java.home}/jre/lib/jce.jar</bootclasspath>-->
+                    <!--</compilerArguments>-->
                 </configuration>
             </plugin>
         </plugins>
