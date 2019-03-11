@@ -36,13 +36,7 @@ public class WebSocketCache {
     }
 
     public String getUserName(String id) {
-        final String[] name = {null};
-        this.cacheMap.forEach((key, value) -> {
-            if(key.equals(id)) {
-                name[0] = value[0].toString();
-            }
-        });
-        return name[0];
+        return this.cacheMap.get(id)[0].toString();
     }
 
     public List<WebSocketSession> getAll() {
